@@ -9,15 +9,17 @@
           <input type="search">
         </div>
         <div>
-          <div class="temperature">
-            28°
+          <div class="temperature" v-if="weather.current">
+            {{weather.current.temperature_2m}}°
+           
+            <!-- {{ currentTemperature }}° -->
             <div class="type-of-day">
-              Rainy Day
-            </div>
-            <div class="info-day">
-              Today, expect a rainy day with a temperatures reaching a maximum of 28°C. Make sure to grab your umbrella
-              and
-              raincoat before heading out.
+              <div>
+
+              </div>
+              <div>
+                {{ temperatureMax}}° / {{ temperatureMin}}°
+              </div>
             </div>
           </div>
           <div class="square-container">
@@ -26,7 +28,7 @@
                 <span class="material-symbols-sharp">
                   device_thermostat
                 </span>
-                Fells like
+                Sensação
               </div>
               <div>
                 30º
@@ -115,9 +117,60 @@
         </div>
       </div>
     </div>
+    <button v-on:click="search()">
+      clique aqui
+    </button>
   </div>
 </template>
+<script>
+export default {
+  data() {
+    return {
+      longitude: 0,
+      latitude: 0,
+      weather: {},
+      currentTemperature: 0,
+      temperatureMax: 0,
+      temperatureMin: 0
+    }
+  },
+  methods: {
+    search() {
+      const axios = require('axios')
+      let url = 'https://maps.googleapis.com/maps/api/geocode/json?address=jacarei&key=AIzaSyApTY3yOsLuqb67qxHom3TJuKqg3K9snWc'
+      let config = {}
+      axios.get(url, config).then(response => {
+        // console.log(response)
+        this.longitude = response.data.results[0].geometry.location.lng
+        this.latitude = response.data.results[0].geometry.location.lat
+        this.forecast()
+      }).catch(error => {
+        console.log(error)
+      })
+    },
+    forecast() {
+      const axios = require('axios')
+      let url = 'https://api.open-meteo.com/v1/forecast?latitude=' + this.latitude + '&longitude=' + this.longitude + '&current=temperature_2m,relativehumidity_2m,apparent_temperature,precipitation,rain,weathercode,cloudcover,windspeed_10m,winddirection_10m,windgusts_10m&hourly=temperature_2m,relativehumidity_2m,apparent_temperature,precipitation_probability,windspeed_10m,winddirection_10m,uv_index&daily=weathercode,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,sunrise,sunset&timezone=America%2FSao_Paulo'
+      let config = {}
+      axios.get(url, config).then(response => {
+        this.weather = response.data
+        console.log(this.weather)
+        // console.log(this.weather.current.temperature_2m)
+        this.currentTemperature = response.data.current.temperature_2m
+        // this.temperatureMax = response.data.daily.temperature_2m_max[0]
+        // this.temperatureMin = response.data.daily.temperature_2m_min[0]
+        // localStorage.setItem('weather', JSON.stringify(this.weather))
+      }).catch(error => {
+        console.log(error)
+      })
+    }
+  },
+  beforeCreated(){
+    console.Console('estou funcionando')
+  }
 
+}
+</script>
 <style>
 body {
   margin: 0;
@@ -227,6 +280,7 @@ input {
   font-size: 0.3em;
   text-align: center;
 }
+
 .right-container {
   width: 58%;
   display: flex;
@@ -235,31 +289,38 @@ input {
   padding: 1vh;
   box-sizing: border-box;
 }
+
 .forecast {
   height: 27vh;
   border-radius: 20px;
   padding: 1vh 1vw;
   box-sizing: border-box;
   background-color: rgba(0, 0, 0, 0.788);
+
 }
+
 .uv-wind-container {
   height: 27vh;
   display: flex;
   justify-content: space-between;
-  
+
 }
-.separation{
+
+.separation {
   border-bottom: 1px solid rgba(59, 58, 58, 0.76);
   width: 100%;
   margin-top: 1vh;
 }
+
 .card-container {
   height: 18vh;
   overflow-x: scroll;
   display: flex;
   color: white;
 }
-.uv-index, .wind {
+
+.uv-index,
+.wind {
   height: 100%;
   width: 48%;
   border-radius: 20px;
@@ -267,5 +328,23 @@ input {
   padding: 1vh;
   box-sizing: border-box;
   color: white;
+}
+
+::-webkit-scrollbar {
+  height: 1vh;
+  width: 1vh;
+}
+
+::-webkit-scrollbar-track {
+  background-color: transparent;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #424242;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #5a5959;
 }
 </style>
