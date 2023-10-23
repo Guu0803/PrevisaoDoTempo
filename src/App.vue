@@ -1,25 +1,18 @@
 <template>
   <div class="window">
-    <div class="main-container ">
+    <div class="main-container">
       <div class="left-container">
         <div class="search-container">
           <span class="material-symbols-sharp location">
             location_on
           </span>
-          <input type="search">
+          <input type="search" placeholder="Inserir Local" v-model="city" v-on:keyup.enter="search()">
         </div>
         <div>
-          <div class="temperature" v-if="weather.current">
-            {{weather.current.temperature_2m}}°
-           
-            <!-- {{ currentTemperature }}° -->
+          <div class="temperature">
+            {{ weather.results.temp }}°
             <div class="type-of-day">
-              <div>
-
-              </div>
-              <div>
-                {{ temperatureMax}}° / {{ temperatureMin}}°
-              </div>
+              {{ weather.results.description }}
             </div>
           </div>
           <div class="square-container">
@@ -28,13 +21,10 @@
                 <span class="material-symbols-sharp">
                   device_thermostat
                 </span>
-                Sensação
+                Máx / Min
               </div>
               <div>
-                30º
-              </div>
-              <div class="info-square">
-                Humidity is making it feel warmer
+                {{ weather.results.forecast[0].max }}° / {{ weather.results.forecast[0].min }}°
               </div>
             </div>
             <div>
@@ -42,13 +32,10 @@
                 <span class="material-symbols-sharp">
                   water_drop
                 </span>
-                Precipitation
+                Precipitação
               </div>
               <div>
-                2.3'
-              </div>
-              <div class="info-square">
-                2' expected in next 24h
+                {{ weather.results.forecast[0].rain_probability }} %
               </div>
             </div>
             <div>
@@ -56,16 +43,26 @@
                 <span class="material-symbols-sharp">
                   humidity_percentage
                 </span>
-                Humidity
+                Umidade
               </div>
               <div>
-                82%
-              </div>
-              <div class="info-square">
-                The dew point is 25° right now
+                {{ weather.results.humidity }} %
               </div>
             </div>
-            <div></div>
+            <div>
+              <div class="title">
+                <span class="material-symbols-sharp">
+                  air
+                </span>
+                Vento
+              </div>
+              <div class="wind">
+                <div>
+                  {{ weather.results.wind_cardinal }}
+                </div>
+                {{ weather.results.wind_speedy }}
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -73,27 +70,23 @@
         <div class="forecast">
           <div class="title">
             <span class="material-symbols-sharp">
-              schedule
-            </span>
-            Hourly Forecast
-          </div>
-          <div class="separation"></div>
-          <div class="card-container">
-            <div class="hour">
-              28°
-            </div>
-          </div>
-        </div>
-        <div class="forecast">
-          <div class="title">
-            <span class="material-symbols-sharp">
               calendar_today
             </span>
-            10-Day Forecast
+            Previsão para 10 dias
           </div>
           <div class="separation"></div>
           <div class="card-container">
-            Today
+            <div v-for="forecast in weather.results.forecast" :key="forecast">
+              <div class="card">
+                <div>
+                  {{ forecast.weekday }}
+                </div>
+                {{ forecast.date }}
+                <div>
+                  {{ forecast.max }}° / {{ forecast.min }}°
+                </div>
+              </div>
+            </div>
           </div>
         </div>
         <div class="uv-wind-container">
@@ -102,71 +95,54 @@
               <span class="material-symbols-sharp">
                 device_thermostat
               </span>
-              UV Index
+              Índice UV
             </div>
-            3 Moderate
+            <!-- {{ weather.daily.uv_index_max[0] }} -->
           </div>
           <div class="wind">
             <div class="title">
-              <span class="material-symbols-sharp">
-                air
+              <span class="material-icons">
+                wb_twilight
               </span>
-              Wind
+              Nascer/Pôr do Sol
+            </div>
+            <div>
+              Nascer do Sol: {{ weather.results.sunrise }}
+              Pôr do Sol {{ weather.results.sunset }}
             </div>
           </div>
         </div>
       </div>
     </div>
-    <button v-on:click="search()">
-      clique aqui
-    </button>
   </div>
 </template>
 <script>
 export default {
   data() {
     return {
-      longitude: 0,
-      latitude: 0,
+      city: '',
       weather: {},
-      currentTemperature: 0,
-      temperatureMax: 0,
-      temperatureMin: 0
     }
   },
   methods: {
     search() {
       const axios = require('axios')
-      let url = 'https://maps.googleapis.com/maps/api/geocode/json?address=jacarei&key=AIzaSyApTY3yOsLuqb67qxHom3TJuKqg3K9snWc'
-      let config = {}
-      axios.get(url, config).then(response => {
-        // console.log(response)
-        this.longitude = response.data.results[0].geometry.location.lng
-        this.latitude = response.data.results[0].geometry.location.lat
-        this.forecast()
-      }).catch(error => {
-        console.log(error)
-      })
-    },
-    forecast() {
-      const axios = require('axios')
-      let url = 'https://api.open-meteo.com/v1/forecast?latitude=' + this.latitude + '&longitude=' + this.longitude + '&current=temperature_2m,relativehumidity_2m,apparent_temperature,precipitation,rain,weathercode,cloudcover,windspeed_10m,winddirection_10m,windgusts_10m&hourly=temperature_2m,relativehumidity_2m,apparent_temperature,precipitation_probability,windspeed_10m,winddirection_10m,uv_index&daily=weathercode,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,sunrise,sunset&timezone=America%2FSao_Paulo'
+      let url = 'https://api.hgbrasil.com/weather?format=json-cors&key=b4c4e12d&city_name=' + this.city
       let config = {}
       axios.get(url, config).then(response => {
         this.weather = response.data
-        console.log(this.weather)
-        // console.log(this.weather.current.temperature_2m)
-        this.currentTemperature = response.data.current.temperature_2m
-        // this.temperatureMax = response.data.daily.temperature_2m_max[0]
-        // this.temperatureMin = response.data.daily.temperature_2m_min[0]
-        // localStorage.setItem('weather', JSON.stringify(this.weather))
+        localStorage.setItem('weather', JSON.stringify(this.weather))
       }).catch(error => {
         console.log(error)
       })
     }
   },
-  beforeCreated(){
-    console.Console('estou funcionando')
+  created() {
+    let weather = localStorage.getItem('weather')
+    weather = JSON.parse(weather)
+    if (weather) {
+      this.weather = weather
+    }
   }
 
 }
@@ -179,16 +155,19 @@ body {
 
 .window {
   max-width: 100vw;
-  padding: 3vw;
+  height: 100vh;
   box-sizing: border-box;
   background-image: url('@/assets/weather-wallpaper.jpg');
   background-size: cover;
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .main-container {
-  height: 88vh;
-  width: 100%;
+  height: 80vh;
+  width: 80%;
   border-radius: 25px;
   background-color: #000000be;
   padding: 1vw;
@@ -208,9 +187,15 @@ body {
 input {
   width: 100%;
   height: 5vh;
-  border-radius: 20px;
   background-color: #424242;
   border: none;
+  border-radius: 20px;
+  padding-left: 4vw;
+}
+
+::placeholder {
+  color: #807e7e;
+  font-size: 2.2vh;
 }
 
 .search-container {
@@ -220,45 +205,42 @@ input {
 }
 
 .location {
+  color: white;
   position: absolute;
   left: 1vw;
-  color: white;
 }
 
 .temperature {
   color: white;
   display: flex;
-  font-size: 4em;
+  font-size: 10vh;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 40vh;
+  height: 35vh;
   gap: 1vh;
 }
 
 .type-of-day {
-  font-size: 0.5em;
-}
-
-.info-day {
-  font-size: 0.15em;
-  text-align: center;
+  font-size: 3vh;
 }
 
 .square-container {
-  margin: 0 2vw;
   display: flex;
+  align-items: center;
+  justify-content: center;
   gap: 1vw;
   flex-wrap: wrap;
+  width: 100%;
 }
 
 .square-container>div {
-  width: 15vw;
-  height: 15vh;
+  width: 13vw;
+  height: 13vh;
   border-radius: 15px;
-  padding: 1vh 0.3vh;
+  padding: 1vh;
   color: white;
-  font-size: 2em;
+  font-size: 3vh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -272,55 +254,76 @@ input {
   gap: 1vh;
   align-items: center;
   justify-content: center;
-  font-size: 3vh;
-  font-weight: 500;
+  font-size: 3.5vh;
+  font-weight: 700;
 }
 
-.info-square {
-  font-size: 0.3em;
-  text-align: center;
+.wind {
+  display: flex;
+  flex-direction: column;
+  gap: 1vh;
+  font-size: 2.5vh;
 }
 
 .right-container {
   width: 58%;
   display: flex;
   flex-direction: column;
-  gap: 1vh;
+  gap: 2vh;
   padding: 1vh;
   box-sizing: border-box;
 }
 
 .forecast {
-  height: 27vh;
+  height: 30vh;
   border-radius: 20px;
-  padding: 1vh 1vw;
+  padding: 2vh 1vw;
   box-sizing: border-box;
   background-color: rgba(0, 0, 0, 0.788);
-
 }
 
 .uv-wind-container {
-  height: 27vh;
+  height: 30vh;
   display: flex;
   justify-content: space-between;
-
 }
 
 .separation {
   border-bottom: 1px solid rgba(59, 58, 58, 0.76);
   width: 100%;
-  margin-top: 1vh;
+  margin: 1vh 0;
 }
 
 .card-container {
-  height: 18vh;
+  height: 20vh;
   overflow-x: scroll;
-  display: flex;
   color: white;
 }
 
-.uv-index,
-.wind {
+.card-container {
+  display: flex;
+  gap: 1vh;
+}
+
+.card {
+  width: 8vw;
+  height: 18vh;
+  color: white;
+  display: flex;
+  gap: 1vh;
+  box-sizing: border-box;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 15px;
+  cursor: pointer;
+}
+
+.card:hover {
+  background-color: #292727;
+}
+
+.uv-index {
   height: 100%;
   width: 48%;
   border-radius: 20px;
