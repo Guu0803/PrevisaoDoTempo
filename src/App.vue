@@ -8,61 +8,28 @@
           </span>
           <input type="search" placeholder="Inserir Local" v-model="city" v-on:keyup.enter="search()">
         </div>
-        <div>
+        <div class="temperature-container">
           <div class="temperature">
             {{ weather.results.temp }}°
-            <div class="type-of-day">
-              {{ weather.results.description }}
+            <img
+              :src="'https://assets.hgbrasil.com/weather/icons/conditions/' + this.weather.results.condition_slug + '.svg'"
+              class="icon-weather">
+          </div>
+          <div class="type-of-day">
+            {{ weather.results.description }}
+          </div>
+        </div>
+        <div class="local-container">
+          <div class="local">
+            <span class="material-symbols-sharp icon-local">
+              location_on
+            </span>
+            <div class="city">
+              {{ weather.results.city }}
             </div>
           </div>
-          <div class="square-container">
-            <div>
-              <div class="title">
-                <span class="material-symbols-sharp">
-                  device_thermostat
-                </span>
-                Máx / Min
-              </div>
-              <div>
-                {{ weather.results.forecast[0].max }}° / {{ weather.results.forecast[0].min }}°
-              </div>
-            </div>
-            <div>
-              <div class="title">
-                <span class="material-symbols-sharp">
-                  water_drop
-                </span>
-                Precipitação
-              </div>
-              <div>
-                {{ weather.results.forecast[0].rain_probability }} %
-              </div>
-            </div>
-            <div>
-              <div class="title">
-                <span class="material-symbols-sharp">
-                  humidity_percentage
-                </span>
-                Umidade
-              </div>
-              <div>
-                {{ weather.results.humidity }} %
-              </div>
-            </div>
-            <div>
-              <div class="title">
-                <span class="material-symbols-sharp">
-                  air
-                </span>
-                Vento
-              </div>
-              <div class="wind">
-                <div>
-                  {{ weather.results.wind_cardinal }}
-                </div>
-                {{ weather.results.wind_speedy }}
-              </div>
-            </div>
+          <div class="date">
+            {{ weather.results.date }}
           </div>
         </div>
       </div>
@@ -78,37 +45,79 @@
           <div class="card-container">
             <div v-for="forecast in weather.results.forecast" :key="forecast">
               <div class="card">
-                <div>
+                <div class="forecast-weekday">
                   {{ forecast.weekday }}
                 </div>
-                {{ forecast.date }}
-                <div>
-                  {{ forecast.max }}° / {{ forecast.min }}°
+                <div class="forecast-date">
+                  {{ forecast.date }}
                 </div>
+                <div>
+                  {{ forecast.max }}° - {{ forecast.min }}°
+                </div>
+                <img :src="'https://assets.hgbrasil.com/weather/icons/conditions/' + forecast.condition + '.svg'"
+                  class="icon-forecast">
               </div>
             </div>
           </div>
         </div>
-        <div class="uv-wind-container">
-          <div class="uv-index">
+        <div class="other-data">
+          <div>
             <div class="title">
               <span class="material-symbols-sharp">
                 device_thermostat
               </span>
-              Índice UV
+              Máx / Min
             </div>
-            <!-- {{ weather.daily.uv_index_max[0] }} -->
+            <div class="separation"></div>
+            <div class="data">
+              {{ weather.results.forecast[0].max }}° - {{ weather.results.forecast[0].min }}°
+            </div>
           </div>
-          <div class="wind">
+          <div>
             <div class="title">
-              <span class="material-icons">
-                wb_twilight
+              <span class="material-symbols-sharp">
+                water_drop
               </span>
-              Nascer/Pôr do Sol
+              Precipitação
             </div>
-            <div>
-              Nascer do Sol: {{ weather.results.sunrise }}
-              Pôr do Sol {{ weather.results.sunset }}
+            <div class="separation"></div>
+            <div class="data">
+              {{ weather.results.forecast[0].rain_probability }} %
+            </div>
+          </div>
+          <div>
+            <div class="title">
+              <span class="material-symbols-sharp">
+                humidity_percentage
+              </span>
+              Umidade
+            </div>
+            <div class="separation"></div>
+            <div class="data">
+              {{ weather.results.humidity }} %
+            </div>
+          </div>
+          <div>
+            <div class="title">
+              <span class="material-symbols-sharp">
+                air
+              </span>
+              Vento
+            </div>
+            <div class="separation"></div>
+            <div class="data">
+              <div>
+                {{ weather.results.wind_cardinal }}
+                <span class="material-symbols-sharp">
+                  explore
+                </span>
+              </div>
+              <div>
+                {{ weather.results.wind_speedy }}
+                <span class="material-icons">
+                  speed
+                </span>
+              </div>
             </div>
           </div>
         </div>
@@ -122,6 +131,7 @@ export default {
     return {
       city: '',
       weather: {},
+      linkConditionIcon: ''
     }
   },
   methods: {
@@ -144,7 +154,6 @@ export default {
       this.weather = weather
     }
   }
-
 }
 </script>
 <style>
@@ -166,11 +175,12 @@ body {
 }
 
 .main-container {
-  height: 80vh;
-  width: 80%;
+  height: 75vh;
+  width: 50%;
   border-radius: 25px;
-  background-color: #000000be;
-  padding: 1vw;
+  background-color: #ffffff10;
+  backdrop-filter: blur(5px);
+  padding: 4vh 1vw;
   box-sizing: border-box;
   display: flex;
   gap: 1vw;
@@ -180,17 +190,20 @@ body {
   height: 100%;
   width: 40%;
   box-sizing: border-box;
-  padding: 0.5vh;
   border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 input {
   width: 100%;
   height: 5vh;
-  background-color: #424242;
+  background-color: rgba(0, 0, 0, 0.788);
   border: none;
   border-radius: 20px;
   padding-left: 4vw;
+  color: white;
 }
 
 ::placeholder {
@@ -207,70 +220,62 @@ input {
 .location {
   color: white;
   position: absolute;
+  font-size: 3vh;
   left: 1vw;
 }
 
-.temperature {
+.temperature-container {
   color: white;
+  font-size: 7vh;
+  height: 15vh;
   display: flex;
-  font-size: 10vh;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  height: 35vh;
   gap: 1vh;
+}
+
+.temperature {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1vh;
+}
+
+.icon-weather {
+  height: 8vh;
 }
 
 .type-of-day {
   font-size: 3vh;
-}
-
-.square-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1vw;
-  flex-wrap: wrap;
-  width: 100%;
-}
-
-.square-container>div {
-  width: 13vw;
-  height: 13vh;
-  border-radius: 15px;
-  padding: 1vh;
   color: white;
-  font-size: 3vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1vh;
-  background-color: rgba(0, 0, 0, 0.788);
 }
-
-.title {
-  color: rgb(74, 74, 124);
-  display: flex;
-  gap: 1vh;
-  align-items: center;
-  justify-content: center;
-  font-size: 3.5vh;
-  font-weight: 700;
+.local-container {
+  margin:0 0 2vh 1vw;
 }
-
-.wind {
-  display: flex;
-  flex-direction: column;
-  gap: 1vh;
+.local {
   font-size: 2.5vh;
+  align-items: center;
+  display: flex;
+  gap: 1vh;
+  color: #b9b9b9;
+}
+
+.date {
+  font-size: 1.7vh;
+  color: #b9b9b9;
+  margin: 0.5vh 0  0 1.5vw ;
+}
+
+.icon-local {
+  font-size: 2vh;
 }
 
 .right-container {
   width: 58%;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   gap: 2vh;
-  padding: 1vh;
   box-sizing: border-box;
 }
 
@@ -280,6 +285,55 @@ input {
   padding: 2vh 1vw;
   box-sizing: border-box;
   background-color: rgba(0, 0, 0, 0.788);
+}
+
+.other-data {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1vw;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.other-data>div {
+  width: 12.4vw;
+  height: 13vh;
+  border-radius: 15px;
+  padding: 1.5vh 1vh;
+  color: white;
+  font-size: 3vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.788);
+}
+
+.title {
+  color: rgb(74, 74, 124);
+  display: flex;
+  gap: 1vh;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5vh;
+  font-weight: 700;
+}
+
+.data {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5vh;
+  font-size: 2.7vh;
+  height: 10vh;
+
+}
+
+.data>div {
+  display: flex;
+  align-items: center;
+  gap: 1vh;
 }
 
 .uv-wind-container {
@@ -323,14 +377,41 @@ input {
   background-color: #292727;
 }
 
+.forecast-weekday {
+  color: rgb(74, 74, 124);
+  font-size: 2vh;
+  font-weight: 700;
+}
+
+.forecast-date {
+  font-size: 2vh;
+  color: #747272;
+  font-weight: 500;
+}
+
+.icon-forecast {
+  height: 6vh;
+}
+
 .uv-index {
   height: 100%;
   width: 48%;
   border-radius: 20px;
   background-color: rgba(0, 0, 0, 0.788);
-  padding: 1vh;
+  padding: 2vh 1vw;
   box-sizing: border-box;
   color: white;
+}
+
+.sunrise-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2vh;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid red;
+  height: 15vh;
+  margin-top: 2vh;
 }
 
 ::-webkit-scrollbar {
