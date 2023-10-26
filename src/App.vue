@@ -3,7 +3,7 @@
     <div class="main-container">
       <div class="left-container">
         <div class="search-container">
-          <span class="material-symbols-sharp location">
+          <span class="material-symbols-sharp location" v-on:click="getUserIp()">
             location_on
           </span>
           <input type="search" placeholder="Inserir Local" v-model="city" v-on:keyup.enter="search()">
@@ -131,7 +131,6 @@ export default {
     return {
       city: '',
       weather: {},
-      linkConditionIcon: ''
     }
   },
   methods: {
@@ -145,9 +144,21 @@ export default {
       }).catch(error => {
         console.log(error)
       })
+    },
+    getUserIp() {
+      const axios = require('axios')
+      let url = 'https://api.hgbrasil.com/weather?format=json-cors&key=b4c4e12d&user_ip=remote'
+      let config = {}
+      axios.get(url, config).then(response => {
+        this.weather = response.data
+        localStorage.setItem('weather', JSON.stringify(this.weather))
+      }).catch(error => {
+        console.log(error)
+      })
     }
   },
   created() {
+    this.getUserIp()
     let weather = localStorage.getItem('weather')
     weather = JSON.parse(weather)
     if (weather) {
@@ -168,7 +179,7 @@ body {
   box-sizing: border-box;
   background-image: url('@/assets/weather-wallpaper.jpg');
   background-size: cover;
-  overflow: hidden;
+  overflow: auto;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -178,8 +189,8 @@ body {
   height: 75vh;
   width: 50%;
   border-radius: 25px;
-  background-color: #ffffff10;
-  backdrop-filter: blur(5px);
+  background-color: #ffffff07;
+  backdrop-filter: blur(7px);
   padding: 4vh 1vw;
   box-sizing: border-box;
   display: flex;
@@ -188,7 +199,7 @@ body {
 
 .left-container {
   height: 100%;
-  width: 40%;
+  width: 30vw;
   box-sizing: border-box;
   border-radius: 20px;
   display: flex;
@@ -222,6 +233,11 @@ input {
   position: absolute;
   font-size: 3vh;
   left: 1vw;
+  cursor: pointer;
+}
+
+.location:hover {
+  color: rgb(74, 74, 124);
 }
 
 .temperature-container {
@@ -249,9 +265,11 @@ input {
   font-size: 3vh;
   color: white;
 }
+
 .local-container {
-  margin:0 0 2vh 1vw;
+  margin: 0 0 2vh 1vw;
 }
+
 .local {
   font-size: 2.5vh;
   align-items: center;
@@ -263,7 +281,7 @@ input {
 .date {
   font-size: 1.7vh;
   color: #b9b9b9;
-  margin: 0.5vh 0  0 1.5vw ;
+  margin: 0.5vh 0 0 1.5vw;
 }
 
 .icon-local {
@@ -271,7 +289,7 @@ input {
 }
 
 .right-container {
-  width: 58%;
+  width: 28vw;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -293,11 +311,11 @@ input {
   justify-content: center;
   gap: 1vw;
   flex-wrap: wrap;
-  width: 100%;
+  width: 28vw;
 }
 
 .other-data>div {
-  width: 12.4vw;
+  width: 12vw;
   height: 13vh;
   border-radius: 15px;
   padding: 1.5vh 1vh;
@@ -307,6 +325,7 @@ input {
   flex-direction: column;
   align-items: center;
   background-color: rgba(0, 0, 0, 0.788);
+
 }
 
 .title {
@@ -327,19 +346,12 @@ input {
   gap: 0.5vh;
   font-size: 2.7vh;
   height: 10vh;
-
 }
 
 .data>div {
   display: flex;
   align-items: center;
   gap: 1vh;
-}
-
-.uv-wind-container {
-  height: 30vh;
-  display: flex;
-  justify-content: space-between;
 }
 
 .separation {
@@ -393,27 +405,6 @@ input {
   height: 6vh;
 }
 
-.uv-index {
-  height: 100%;
-  width: 48%;
-  border-radius: 20px;
-  background-color: rgba(0, 0, 0, 0.788);
-  padding: 2vh 1vw;
-  box-sizing: border-box;
-  color: white;
-}
-
-.sunrise-container {
-  display: flex;
-  flex-direction: column;
-  gap: 2vh;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid red;
-  height: 15vh;
-  margin-top: 2vh;
-}
-
 ::-webkit-scrollbar {
   height: 1vh;
   width: 1vh;
@@ -431,4 +422,78 @@ input {
 ::-webkit-scrollbar-thumb:hover {
   background-color: #5a5959;
 }
-</style>
+
+
+@media screen and (max-width:1000px) {
+  .window {
+    height: auto;
+    padding: 3vh 0;
+  }
+
+  .main-container {
+    flex-direction: column;
+    width: 85%;
+    height: auto;
+    padding: 3vh 2vh;
+
+  }
+
+  .left-container,
+  .right-container {
+    width: auto;
+  }
+
+  .temperature-container {
+    height: 20vh;
+    justify-content: center;
+  }
+
+  input {
+    padding-left: 10vw;
+  }
+
+  .location {
+    left: 3vw;
+  }
+
+  .local-container {
+    margin: 0 0 2vh 3vw;
+  }
+
+  .local {
+    font-size: 2vh;
+  }
+
+  .date {
+    font-size: 1.3;
+    margin: 0.5vh 0 0 5vw;
+  }
+
+  .forecast {
+    padding: 2vh 1vh;
+  }
+
+  .card {
+    width: 20vw;
+  }
+
+  .other-data {
+    flex-direction: column;
+    gap: 2vh;
+    align-items: center;
+    width: fit-content;
+    width:auto;
+    box-sizing: border-box;
+  }
+
+  .other-data>div {
+    width:100%;
+    height: 17vh;
+    box-sizing: border-box;
+  }
+
+  .data {
+    font-size: 2.5;
+    height: 7vh;
+  }
+}</style>
