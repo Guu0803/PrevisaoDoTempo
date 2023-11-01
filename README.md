@@ -3,8 +3,7 @@
 Este é um web app de previsão do tempo que fornece informações atualizadas sobre as condições climáticas de diferentes cidades. O aplicativo foi desenvolvido em Vue.js e utiliza a API HG Weather da HG Brasil para obter dados meteorológicos.
 
 ## Demonstração
-
-
+![app-previsao-do-tempo](https://github.com/Guu0803/PrevisaoDoTempo/assets/110205737/6ece7d0e-1a6d-4a33-9621-b1d157e578c3)
 
 ## Tecnologias Utilizadas
 
