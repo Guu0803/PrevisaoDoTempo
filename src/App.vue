@@ -136,7 +136,7 @@ export default {
   methods: {
     search() {
       const axios = require('axios')
-      let url = 'https://api.hgbrasil.com/weather?format=json-cors&key=b4c4e12d&city_name=' + this.city
+      let url = 'https://api.hgbrasil.com/weather?format=json-cors&key=cd0b75a8&city_name=' + this.city
       let config = {}
       axios.get(url, config).then(response => {
         this.weather = response.data
@@ -147,7 +147,7 @@ export default {
     },
     getUserIp() {
       const axios = require('axios')
-      let url = 'https://api.hgbrasil.com/weather?format=json-cors&key=b4c4e12d&user_ip=remote'
+      let url = 'https://api.hgbrasil.com/weather?format=json-cors&key=cd0b75a8&user_ip=remote'
       let config = {}
       axios.get(url, config).then(response => {
         this.weather = response.data
