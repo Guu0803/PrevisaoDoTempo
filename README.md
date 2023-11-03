@@ -39,5 +39,6 @@ Se desejar contribuir para este projeto, siga estas etapas:
 ## Autor
 
 Gustavo Nogueira
+[LinkedIn](https://www.linkedin.com/in/gustavo-henrique-nogueira-deranzani-bicudo-11659a221/)
 
 
