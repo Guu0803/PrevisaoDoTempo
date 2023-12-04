@@ -8,7 +8,7 @@ https://gustavo-weather.netlify.app/
 
 ## Tecnologias Utilizadas
 
-- [Vue.js](https://vuejs.org/): O framework JavaScript utilizado para a construção da interface do usuário.
+- Vue.js: O framework JavaScript utilizado para a construção da interface do usuário.
 - [HG Weather API](https://hgbrasil.com/apis): A API que fornece dados meteorológicos precisos e atualizados.
 - HTML e CSS: Para estruturação e estilização da interface do usuário.
 
